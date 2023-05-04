@@ -21,7 +21,7 @@ def download(url):
     except (EOFError, ValueError) as e:
         pass
     except Exception as e:
-        pass
+        return None
     print(f"Spacetime Response error {resp} with url {url}.")
     return Response({
         "error": f"Spacetime Response error {resp} with url {url}.",

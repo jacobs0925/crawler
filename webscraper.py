@@ -13,6 +13,9 @@ domains_hashed_pages = {}
 hashedURLs = []
 
 def getDomain(url):
+    '''
+    returns domain of url
+    '''
     parsed_url = urlparse(url)
     return parsed_url.netloc
     
@@ -30,6 +33,9 @@ def defrag(url):
         return url
 
 def computeWordFrequencies(text):
+    '''
+    coputes word frequencies from assignment 1
+    '''
     tokens = {}
     for word in re.split(Splitregex, text):
         word = word.strip()
@@ -47,6 +53,9 @@ def computeWordFrequencies(text):
     return tokens
 
 def compareHashes(hashedURLs, simhashed):
+    '''
+    compare hash to all hashes in domain and return if more than 80 percent similar
+    '''
     for hashed_url in hashedURLs:
         common = 0
         for a,b in zip(hashed_url, simhashed):
@@ -105,6 +114,9 @@ def getLinksHTML(soup, url):
     return links
 
 def validHTTPStatus(resp):
+    '''
+    returns true only if status code is valid
+    '''
     status = resp.status
     if 200 <= status < 300:
         #successful
@@ -120,6 +132,9 @@ def validHTTPStatus(resp):
         return False
 
 def hashToken(token):
+    '''
+    uses hashlib to create a 32 bit hash and returns a binary string representation
+    '''
     token = token.encode('utf-8')
     h = hashlib.blake2b(token, digest_size=4)
     
@@ -130,6 +145,12 @@ def hashToken(token):
     return binhash
 
 def simhash(soup):
+    '''
+    computes simhash of webpage given soup representation
+    computes weights of tokens and hashes them to a 32 bit value
+    adds or subtracts weights of each token to weight vector
+    computes fingerprint from weight vector
+    '''
     text = soup.text
     text = text.replace('\n','')
     frequencies = computeWordFrequencies(text)
