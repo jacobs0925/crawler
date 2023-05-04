@@ -245,4 +245,6 @@ if __name__ == '__main__':
             seeds.extend(extract_next_links(top, resp))
             time.sleep(.5)
             j += 1
+    with open('output.txt', 'a') as f:
+            f.write('links ' + str(len(completed)))
     print('links',len(completed))
