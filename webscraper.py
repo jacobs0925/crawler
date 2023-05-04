@@ -238,7 +238,7 @@ if __name__ == '__main__':
         while (len(seeds) > 0):
             top = seeds.pop(0)
             print(j, 'current link',top)
-            f.write(str(j) + top)
+            f.write(str(j) + top + '\n')
             resp = download(top)
             if resp:
                 seeds.extend(extract_next_links(top, resp))
