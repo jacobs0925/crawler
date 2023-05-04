@@ -83,7 +83,7 @@ def getLinksHTML(soup, url):
     '''
     #stop if no links
     a_tags = soup.find_all('a')
-    if len(a_tag) == 0:
+    if len(a_tags) == 0:
         return []
     
     simhashed = simhash(soup)
