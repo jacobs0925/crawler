@@ -230,18 +230,19 @@ def is_valid(url):
 
 if __name__ == '__main__':
     j = 1
-    with open('output.txt', 'w') as f:
     
-        seeds = ['https://www.ics.uci.edu/','https://www.stat.uci.edu/','https://www.informatics.uci.edu/','https://www.cs.uci.edu/']
-        #seeds = ['http://hombao.ics.uci.edu/']
-        completed.extend(seeds)
-        while (len(seeds) > 0):
-            top = seeds.pop(0)
-            print(j, 'current link',top)
-            f.write(str(j) + top + '\n')
-            resp = download(top)
-            if resp:
-                seeds.extend(extract_next_links(top, resp))
-                time.sleep(.5)
-                j += 1
+    
+    seeds = ['https://www.ics.uci.edu/','https://www.stat.uci.edu/','https://www.informatics.uci.edu/','https://www.cs.uci.edu/']
+    #seeds = ['http://hombao.ics.uci.edu/']
+    completed.extend(seeds)
+    while (len(seeds) > 0):
+        top = seeds.pop(0)
+        print(j, 'current link',top)
+        with open('output.txt', 'a') as f:
+            f.write(str(j) +  ' ' + top + '\n')
+        resp = download(top)
+        if resp:
+            seeds.extend(extract_next_links(top, resp))
+            time.sleep(.5)
+            j += 1
     print('links',len(completed))
