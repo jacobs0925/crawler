@@ -13,11 +13,14 @@ def makeRespDict(url, resp):
     return resp_dict
     
 def download(url):
-    resp = requests.get(url)
+    resp = None
     try:
+        resp = requests.get(url)
         if resp and resp.content:
             return Response(makeRespDict(url,resp))
     except (EOFError, ValueError) as e:
+        pass
+    except Exception as e:
         pass
     print(f"Spacetime Response error {resp} with url {url}.")
     return Response({
