@@ -9,9 +9,13 @@ import hashlib
 completed = []
 ANregex = '^[a-z0-9]*$'
 Splitregex = "[^0-9a-zA-Z]+"
-
+domains_hashed_pages = {}
 hashedURLs = []
 
+def getDomain(url):
+    parsed_url = urlparse(url)
+    return parsed_url.netloc
+    
 def scraper(url, resp):
     links = extract_next_links(url, resp)
     return [link for link in links if is_valid(link)]
@@ -42,7 +46,7 @@ def computeWordFrequencies(text):
             tokens[word.lower()] = tokens[word.lower()]+1
     return tokens
 
-def computeSimilarity(simhashed):
+def compareHashes(hashedURLs, simhashed):
     for hashed_url in hashedURLs:
         common = 0
         for a,b in zip(hashed_url, simhashed):
@@ -53,28 +57,51 @@ def computeSimilarity(simhashed):
         if similarity > .8:
             return True
     return False
+
+def computeSimilarity(domain, simhashed):
+    '''
+    iterate over visited domains and check if there is a similar page in that domain
+    if domain doesnt exist, create domain
+    '''
+    for d in domains_hashed_pages.keys():
+        if d == domain: 
+            similar = compareHashes(domains_hashed_pages[domain], simhashed)
+            if not similar:
+                domains_hashed_pages[domain].append(simhashed)
+                
+            return similar
+    
+    #domain not found add domain
+    domains_hashed_pages[domain] = [simhashed]
+    return False
+        
     
 def getLinksHTML(soup, url):
     '''
-    first checks if similar page has already been visited
+    first checks if page has links then if similar page has already been visited
     grabs all a tags and iterates through links if they are valid and not yet visited or repeats
     '''
-    simhashed = simhash(soup)
-    #stop if this page is too similar
-    if computeSimilarity(simhashed):
+    #stop if no links
+    a_tags = soup.find_all('a')
+    if len(a_tag) == 0:
         return []
     
-    hashedURLs.append(simhashed)
+    simhashed = simhash(soup)
+    #stop if this page is too similar
+    if computeSimilarity(getDomain(url), simhashed):
+        return []
     
-    a_tags = soup.find_all('a')
     links = []
     for a_tag in a_tags:
         if not a_tag.get('href'):
             continue
+        
+        #craft absolute link and add to list to return if not visited and valid
         absolute_link = urljoin(url, defrag(a_tag.get('href')))
         if (absolute_link not in links and absolute_link not in completed) and is_valid(absolute_link):
             completed.append(absolute_link)
             links.append(absolute_link)
+            
     return links
 
 def validHTTPStatus(resp):
@@ -139,15 +166,11 @@ def extract_next_links(url, resp):
     if not validHTTPStatus(resp):
         return []
     
-    
-    
     #CHANGE THIS TO RAW_RESPONSE.CONTENT BEFORE GOING LIVE
     soup = BeautifulSoup(resp.raw_response, "html.parser")
     
-    # #stop if too similar
-    # if simhash(soup):
-    #     return []
     #all valid unvisited links in this current page
+    #CHANGE THIS TO RAW_RESPONSE.URL
     links = getLinksHTML(soup, url)
     
     #soup.text for all visible text
@@ -186,10 +209,10 @@ def is_valid(url):
 if __name__ == '__main__':
     j = 1
     seeds = ['https://www.ics.uci.edu/','https://www.stat.uci.edu/','https://www.informatics.uci.edu/','https://www.cs.uci.edu/']
+    completed.extend(seeds)
     #seeds = ['https://swiki.ics.uci.edu/doku.php/start?rev=1609807694','https://swiki.ics.uci.edu/doku.php/start?rev=1617220282']
     while (len(seeds) > 0):
         top = seeds.pop(0)
-        completed.append(top)
         print(j, 'current link',top)
         resp = download(top)
         seeds.extend(extract_next_links(top, resp))
