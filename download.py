@@ -1,5 +1,4 @@
 import requests
-import cbor
 import time
 from bs4 import BeautifulSoup
 
