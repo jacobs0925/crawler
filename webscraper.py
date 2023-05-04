@@ -205,7 +205,7 @@ def is_valid(url):
     except TypeError:
         print ("TypeError for ", parsed)
         raise
-#,'https://www.ics.uci.edu/','https://www.stat.uci.edu/','https://www.informatics.uci.edu/','https://www.cs.uci.edu/'
+
 if __name__ == '__main__':
     j = 1
     seeds = ['https://www.ics.uci.edu/','https://www.stat.uci.edu/','https://www.informatics.uci.edu/','https://www.cs.uci.edu/']
@@ -215,7 +215,8 @@ if __name__ == '__main__':
         top = seeds.pop(0)
         print(j, 'current link',top)
         resp = download(top)
-        seeds.extend(extract_next_links(top, resp))
-        time.sleep(.5)
-        j += 1
+        if resp:
+            seeds.extend(extract_next_links(top, resp))
+            time.sleep(.5)
+            j += 1
     print('links',len(completed))
