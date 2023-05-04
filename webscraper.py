@@ -208,9 +208,9 @@ def is_valid(url):
 #,'https://www.ics.uci.edu/','https://www.stat.uci.edu/','https://www.informatics.uci.edu/','https://www.cs.uci.edu/'
 if __name__ == '__main__':
     j = 1
-    seeds = ['https://www.ics.uci.edu/','https://www.stat.uci.edu/','https://www.informatics.uci.edu/','https://www.cs.uci.edu/']
+    #seeds = ['https://www.ics.uci.edu/','https://www.stat.uci.edu/','https://www.informatics.uci.edu/','https://www.cs.uci.edu/']
+    seeds = ['http://omni.ics.uci.edu/index.html']
     completed.extend(seeds)
-    #seeds = ['https://swiki.ics.uci.edu/doku.php/start?rev=1609807694','https://swiki.ics.uci.edu/doku.php/start?rev=1617220282']
     while (len(seeds) > 0):
         top = seeds.pop(0)
         print(j, 'current link',top)
