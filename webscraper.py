@@ -229,8 +229,8 @@ def is_valid(url):
 
 if __name__ == '__main__':
     j = 1
-    seeds = ['https://www.ics.uci.edu/','https://www.stat.uci.edu/','https://www.informatics.uci.edu/','https://www.cs.uci.edu/']
-    #seeds = ['http://omni.ics.uci.edu/index.html']
+    seeds = ['https://www.ics.uci.edu/','http://hombao.ics.uci.edu/','https://www.stat.uci.edu/','https://www.informatics.uci.edu/','https://www.cs.uci.edu/']
+    #seeds = ['http://hombao.ics.uci.edu/']
     completed.extend(seeds)
     while (len(seeds) > 0):
         top = seeds.pop(0)
