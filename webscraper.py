@@ -108,8 +108,9 @@ def getLinksHTML(soup, url):
         #craft absolute link and add to list to return if not visited and valid
         absolute_link = urljoin(url, defrag(a_tag.get('href')))
         if (absolute_link not in links and absolute_link not in completed) and is_valid(absolute_link):
+            if '?' not in absolute_link:
+                links.append(absolute_link)
             completed.append(absolute_link)
-            links.append(absolute_link)
             
     return links
 
