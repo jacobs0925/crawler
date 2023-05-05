@@ -110,7 +110,7 @@ def getLinksHTML(soup, url):
         if (absolute_link not in links and absolute_link not in completed) and is_valid(absolute_link):
             
             flag = True
-            filters = ['?','.gctx','.txt','.py','.java','.class','.pdf','.npy','.sql','.war','.seq','.bed','.bam']
+            filters = ['?','.gctx','.txt','.py','.java','.class','.pdf','.npy','.sql','.war','.seq','.bed','.bam','.bigwig','.bw']
             for f in filters:
                 if f in absolute_link:
                     flag = False
