@@ -6,11 +6,22 @@ from urllib.parse import urljoin
 import time
 import hashlib
 
-completed = []
+#alphanumeric regexes
 ANregex = '^[a-z0-9]*$'
 Splitregex = "[^0-9a-zA-Z]+"
-domains_hashed_pages = {}
+
+#url processing
+completed = []
 hashedURLs = []
+domains_hashed_pages = {}
+
+#token data
+#excuse this abomination
+stopWords = ["a","about","above","after","again","against","all","am","an","and","any","are","aren't","as","at","be","because","been","before","being","below","between","both","but","by","can't","cannot","could","couldn't","did","didn't","do","does","doesn't","doing","don't","down","during","each","few","for","from","further","had","hadn't","has","hasn't","have","haven't","having","he","he'd","he'll","he's","her","here","here's","hers","herself","him","himself","his","how","how's","i","i'd","i'll","i'm","i've","if","in","into","is","isn't","it","it's","its","itself","let's","me","more","most","mustn't","my","myself","no","nor","not","of","off","on","once","only","or","other","ought","our","ours       ourselves","out","over","own","same","shan't","she","she'd","she'll","she's","should","shouldn't","so","some","such","than","that","that's","the","their","theirs","them","themselves","then","there","there's","these","they","they'd","they'll","they're","they've","this","those","through","to","too","under","until","up","very","was","wasn't","we","we'd","we'll","we're","we've","were","weren't","what","what's","when","when's","where","where's","which","while","who","who's","whom","why","why's","with","won't","would","wouldn't","you","you'd","you'll","you're","you've","your","yours","yourself","yourselves"]
+tokenFrequencies = {}
+longestPage = ("",-1)
+subdomain_and_count = {}
+
 
 def getDomain(url):
     '''
@@ -18,6 +29,13 @@ def getDomain(url):
     '''
     parsed_url = urlparse(url)
     return parsed_url.netloc
+
+def getSubDomain(url):
+    '''
+    returns subdomain of url
+    '''
+    parsed_url = urlparse(url)
+    return parsed_url.hostname.split('.')[0]
     
 def scraper(url, resp):
     links = extract_next_links(url, resp)
@@ -67,21 +85,34 @@ def compareHashes(hashedURLs, simhashed):
             return True
     return False
 
-def computeSimilarity(domain, simhashed):
+def computeSimilarity(domain, subdomain, simhashed, url):
     '''
     iterate over visited domains and check if there is a similar page in that domain
-    if domain doesnt exist, create domain
+    if domain doesnt exist, create domain if subdomain doesnt exist create it
     '''
-    for d in domains_hashed_pages.keys():
-        if d == domain: 
-            similar = compareHashes(domains_hashed_pages[domain], simhashed)
-            if not similar:
-                domains_hashed_pages[domain].append(simhashed)
+    # for d in domains_hashed_pages.keys():
+    #     if d == domain: 
+    #         similar = compareHashes(domains_hashed_pages[domain], simhashed)
+    #         if not similar:
+    #             domains_hashed_pages[domain].append(simhashed)
                 
-            return similar
+    #         return similar
+        
+    for d in domains_hashed_pages.keys():
+        if d == domain:
+            for subd in domains_hashed_pages[d]:
+                if subd == subdomain:
+                    similar = compareHashes(domains_hashed_pages[domain][subdomain], simhashed)
+                    if not similar:
+                        domains_hashed_pages[domain][subdomain].append(simhashed)
+                    return similar
     
-    #domain not found add domain
-    domains_hashed_pages[domain] = [simhashed]
+    #domain or subdomain not found: add
+    if domain in domains_hashed_pages:
+        domains_hashed_pages[domain][subdomain] = [simhashed]
+    else:
+        domains_hashed_pages[domain] = {subdomain:[simhashed]}
+        
     return False
         
     
@@ -95,11 +126,18 @@ def getLinksHTML(soup, url):
     if len(a_tags) == 0:
         return []
     
-    simhashed = simhash(soup)
+    simhashed = simhash(soup, url)
+    subdomain = getSubDomain(url)
     #stop if this page is too similar
-    if computeSimilarity(getDomain(url), simhashed):
+    if computeSimilarity(getDomain(url),subdomain,simhashed,url):
         return []
     
+    #increments number of links in subdomain
+    if (subdomain in subdomain_and_count):
+        subdomain_and_count[subdomain] += 1
+    else:
+        subdomain_and_count[subdomain] = 1
+        
     links = []
     for a_tag in a_tags:
         if not a_tag.get('href'):
@@ -152,12 +190,34 @@ def hashToken(token):
     
     return binhash
 
-def simhash(soup):
+def saveTokenData(frequencies, totalWords, url):
+    '''
+    save token data to public variables and update stats for final report
+    '''
+    global tokenFrequencies
+    global longestPage
+    if longestPage[1] < totalWords:
+        longestPage = (url, totalWords)
+    
+    #parse out stop words
+    for stop in stopWords:
+        if stop in frequencies:
+            del frequencies[stop]
+    
+    #used for finding most common tokens
+    for token, count in frequencies.items():
+        if token in tokenFrequencies:
+            tokenFrequencies[token] += count
+        else:
+            tokenFrequencies[token] = count
+
+def simhash(soup, url):
     '''
     computes simhash of webpage given soup representation
     computes weights of tokens and hashes them to a 32 bit value
     adds or subtracts weights of each token to weight vector
     computes fingerprint from weight vector
+    finally adds tokens and weights to list and sets to longest if applicable
     '''
     text = soup.text
     text = text.replace('\n','')
@@ -178,19 +238,16 @@ def simhash(soup):
     #32 bit fingerprint
     fingerprint = ''.join(['1' if bit > 0 else '0' for bit in V])
     
+    #saving token data
+    totalWords = 0
+    for token,freq in frequencies.items():
+        totalWords += freq
+        
+    saveTokenData(frequencies, totalWords, url)
+    
     return fingerprint
 
 def extract_next_links(url, resp):
-    # Implementation required.
-    # url: the URL that was used to get the page
-    # resp.url: the actual url of the page
-    # resp.status: the status code returned by the server. 200 is OK, you got the page. Other numbers mean that there was some kind of problem.
-    # resp.error: when status is not 200, you can check the error here, if needed.
-    # resp.raw_response: this is where the page actually is. More specifically, the raw_response has two parts:
-    #         resp.raw_response.url: the url, again
-    #         resp.raw_response.content: the content of the page!
-    # Return a list with the hyperlinks (as strings) scrapped from resp.raw_response.content
-    
     #stop if page not valid
     if not validHTTPStatus(resp):
         return []
@@ -208,6 +265,7 @@ def extract_next_links(url, resp):
     
     #soup.text for all visible text
 
+    
     return links
 
 def is_valid(url):
@@ -218,7 +276,8 @@ def is_valid(url):
     # If you decide to crawl it, return True; otherwise return False.
     # There are already some conditions that return False.
     
-    pattern = r'^((.*\.ics\.uci\.edu\/.*)|(.*\.cs\.uci\.edu\/.*)|(.*\.informatics\.uci\.edu\/.*)|(.*\.stat\.uci\.edu\/.*))$'
+    #pattern = r'^((.*\.ics\.uci\.edu\/.*)|(.*\.cs\.uci\.edu\/.*)|(.*\.informatics\.uci\.edu\/.*)|(.*\.stat\.uci\.edu\/.*))$'
+    pattern = r'^.*\.ics\.uci\.edu\/.*$'
     if not re.match(pattern, url.lower()):
         return False
     try:
@@ -256,6 +315,19 @@ if __name__ == '__main__':
             seeds.extend(extract_next_links(top, resp))
             time.sleep(.5)
             j += 1
+            
     with open('output.txt', 'a') as f:
-            f.write('links ' + str(len(completed)))
+        f.write('unique pages: ' + str(len(completed)) + '\n')
+        f.write('longest page ' + longestPage[0] + ', ' + longestPage[1] +'\n')
+        f.write('most common tokens: \n')
+        sorted_freqs = dict(sorted(tokenFrequencies.items(), key=lambda item: item[1], reverse=True))
+        common_50 = sorted_freqs[:50]
+        
+        for token, freq in common_50:
+            f.write(token + ', ' + freq, + '\n')
+        
+        f.write('subdomains and pages: \n')
+        for subdomain in domains_hashed_pages['ics.uci.edu']:
+            f.write(subdomain + ', ' + subdomain_and_count[subdomain], + '\n')
+        
     print('links',len(completed))
