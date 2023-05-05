@@ -9,7 +9,7 @@ def makeRespDict(url, resp):
     resp_dict['url'] = url
     resp_dict['status'] = resp.status_code
     resp_dict['response'] = resp.content
-    
+    resp_dict['size'] = resp.headers.get('Content-Length')
     return resp_dict
     
 def download(url):

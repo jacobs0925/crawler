@@ -195,6 +195,10 @@ def extract_next_links(url, resp):
     if not validHTTPStatus(resp):
         return []
     
+    #stop if page too long
+    if resp.size != None and int(resp.size) > 50000:
+        return []
+    
     #CHANGE THIS TO RAW_RESPONSE.CONTENT BEFORE GOING LIVE
     soup = BeautifulSoup(resp.raw_response, "html.parser")
     
@@ -240,7 +244,7 @@ if __name__ == '__main__':
     
     
     #seeds = ['https://www.ics.uci.edu/','https://www.stat.uci.edu/','https://www.informatics.uci.edu/','https://www.cs.uci.edu/']
-    seeds = ['https://www.ics.uci.edu/','https://grape.ics.uci.edu/wiki/public/zip-attachment/wiki/cs122b-2018-wint%3E']
+    seeds = ['https://www.ics.uci.edu/','https://www.stat.uci.edu/','https://www.informatics.uci.edu/','https://www.cs.uci.edu/','https://grape.ics.uci.edu/wiki/public/zip-attachment/wiki/cs122b-2018-winter-project1-eclipse-project/']
     completed.extend(seeds)
     while (len(seeds) > 0):
         top = seeds.pop(0)
