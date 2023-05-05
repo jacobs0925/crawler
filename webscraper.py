@@ -318,16 +318,16 @@ if __name__ == '__main__':
             
     with open('output.txt', 'a') as f:
         f.write('unique pages: ' + str(len(completed)) + '\n')
-        f.write('longest page ' + longestPage[0] + ', ' + longestPage[1] +'\n')
+        f.write('longest page ' + longestPage[0] + ', ' + str(longestPage[1]) +'\n')
         f.write('most common tokens: \n')
         sorted_freqs = dict(sorted(tokenFrequencies.items(), key=lambda item: item[1], reverse=True))
         common_50 = sorted_freqs[:50]
         
         for token, freq in common_50:
-            f.write(token + ', ' + freq, + '\n')
+            f.write(token + ', ' + str(freq), + '\n')
         
         f.write('subdomains and pages: \n')
         for subdomain in domains_hashed_pages['ics.uci.edu']:
-            f.write(subdomain + ', ' + subdomain_and_count[subdomain], + '\n')
+            f.write(subdomain + ', ' + str(subdomain_and_count[subdomain]), + '\n')
         
     print('links',len(completed))
