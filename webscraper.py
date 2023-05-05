@@ -81,7 +81,7 @@ def compareHashes(hashedURLs, simhashed):
                 common += 1
         similarity = common / len(simhashed)
 
-        if similarity > .8:
+        if similarity > .7:
             return True
     return False
 
