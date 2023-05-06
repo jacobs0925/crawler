@@ -22,6 +22,19 @@ class Worker(Thread):
             tbd_url = self.frontier.get_tbd_url()
             if not tbd_url:
                 self.logger.info("Frontier is empty. Stopping Crawler.")
+                with open('output.txt', 'a') as f:
+                    f.write('unique pages: ' + str(len(scraper.completed)) + '\n')
+                    f.write('longest page ' + scraper.longestPage[0] + ', ' + str(scraper.longestPage[1]) +'\n')
+                    f.write('most common tokens: \n')
+                    sorted_freqs = dict(sorted(scraper.tokenFrequencies.items(), key=lambda item: item[1], reverse=True))
+                    common_50 = list(sorted_freqs.items())[:50]
+                    
+                    for token, freq in common_50:
+                        f.write(token + ', ' + str(freq) + '\n')
+                    
+                    f.write('subdomains and pages: \n')
+                    for subdomain in scraper.domains_hashed_pages['www.ics.uci.edu']:
+                        f.write(subdomain + ', ' + str(scraper.subdomain_and_count[subdomain]) + '\n')
                 break
             resp = download(tbd_url, self.config, self.logger)
             self.logger.info(
