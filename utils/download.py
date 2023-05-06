@@ -1,8 +1,8 @@
 import requests
 import time
 from bs4 import BeautifulSoup
-
-from response import Response
+from utils.response import Response
+import cbor
 
 def makeRespDict(url, resp):
     resp_dict = {}
@@ -11,18 +11,18 @@ def makeRespDict(url, resp):
     resp_dict['response'] = resp.content
     resp_dict['size'] = resp.headers.get('Content-Length')
     return resp_dict
-    
-def download(url):
-    resp = None
+
+def download(url, config, logger=None):
+    host, port = config.cache_server
+    resp = requests.get(
+        f"http://{host}:{port}/",
+        params=[("q", f"{url}"), ("u", f"{config.user_agent}")])
     try:
-        resp = requests.get(url)
         if resp and resp.content:
             return Response(makeRespDict(url,resp))
-    except (EOFError, ValueError) as e:
+    except (EOFError, ValueError, Exception) as e:
         pass
-    except Exception as e:
-        return None
-    print(f"Spacetime Response error {resp} with url {url}.")
+    logger.error(f"Spacetime Response error {resp} with url {url}.")
     return Response({
         "error": f"Spacetime Response error {resp} with url {url}.",
         "status": resp.status_code,

@@ -1,5 +1,5 @@
 import re
-from download import download
+from utils.download import download
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
@@ -256,15 +256,10 @@ def extract_next_links(url, resp):
     if resp.size != None and int(resp.size) > 50000:
         return []
     
-    #CHANGE THIS TO RAW_RESPONSE.CONTENT BEFORE GOING LIVE
     soup = BeautifulSoup(resp.raw_response, "html.parser")
     
     #all valid unvisited links in this current page
-    #CHANGE THIS TO RAW_RESPONSE.URL
     links = getLinksHTML(soup, url)
-    
-    #soup.text for all visible text
-
     
     return links
 
@@ -298,36 +293,36 @@ def is_valid(url):
         print ("TypeError for ", parsed)
         raise
 
-if __name__ == '__main__':
-    j = 1
+# if __name__ == '__main__':
+#     j = 1
     
     
-    seeds = ['https://www.ics.uci.edu/','https://www.stat.uci.edu/','https://www.informatics.uci.edu/','https://www.cs.uci.edu/']
-    #seeds = ['https://www.ics.uci.edu/','https://www.stat.uci.edu/','https://www.informatics.uci.edu/','https://www.cs.uci.edu/','https://grape.ics.uci.edu/wiki/public/zip-attachment/wiki/cs122b-2018-winter-project1-eclipse-project/']
-    completed.extend(seeds)
-    while (len(seeds) > 0):
-        top = seeds.pop(0)
-        print(j, 'current link',top)
-        with open('output.txt', 'a') as f:
-            f.write(str(j) +  ' ' + top + '\n')
-        resp = download(top)
-        if resp:
-            seeds.extend(extract_next_links(top, resp))
-            time.sleep(.5)
-            j += 1
+#     seeds = ['https://www.ics.uci.edu/','https://www.stat.uci.edu/','https://www.informatics.uci.edu/','https://www.cs.uci.edu/']
+#     #seeds = ['https://www.ics.uci.edu/','https://www.stat.uci.edu/','https://www.informatics.uci.edu/','https://www.cs.uci.edu/','https://grape.ics.uci.edu/wiki/public/zip-attachment/wiki/cs122b-2018-winter-project1-eclipse-project/']
+#     completed.extend(seeds)
+#     while (len(seeds) > 0):
+#         top = seeds.pop(0)
+#         print(j, 'current link',top)
+#         with open('output.txt', 'a') as f:
+#             f.write(str(j) +  ' ' + top + '\n')
+#         resp = download(top)
+#         if resp:
+#             seeds.extend(extract_next_links(top, resp))
+#             time.sleep(.5)
+#             j += 1
             
-    with open('output.txt', 'a') as f:
-        f.write('unique pages: ' + str(len(completed)) + '\n')
-        f.write('longest page ' + longestPage[0] + ', ' + str(longestPage[1]) +'\n')
-        f.write('most common tokens: \n')
-        sorted_freqs = dict(sorted(tokenFrequencies.items(), key=lambda item: item[1], reverse=True))
-        common_50 = list(sorted_freqs.items())[:50]
+#     with open('output.txt', 'a') as f:
+#         f.write('unique pages: ' + str(len(completed)) + '\n')
+#         f.write('longest page ' + longestPage[0] + ', ' + str(longestPage[1]) +'\n')
+#         f.write('most common tokens: \n')
+#         sorted_freqs = dict(sorted(tokenFrequencies.items(), key=lambda item: item[1], reverse=True))
+#         common_50 = list(sorted_freqs.items())[:50]
         
-        for token, freq in common_50:
-            f.write(token + ', ' + str(freq) + '\n')
+#         for token, freq in common_50:
+#             f.write(token + ', ' + str(freq) + '\n')
         
-        f.write('subdomains and pages: \n')
-        for subdomain in domains_hashed_pages['www.ics.uci.edu']:
-            f.write(subdomain + ', ' + str(subdomain_and_count[subdomain]) + '\n')
+#         f.write('subdomains and pages: \n')
+#         for subdomain in domains_hashed_pages['www.ics.uci.edu']:
+#             f.write(subdomain + ', ' + str(subdomain_and_count[subdomain]) + '\n')
         
-    print('links',len(completed))
+#     print('links',len(completed))

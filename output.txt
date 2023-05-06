@@ -1,4 +1,0 @@
-1https://www.ics.uci.edu/
-2https://www.stat.uci.edu/
-3https://www.informatics.uci.edu/
-4https://www.cs.uci.edu/
