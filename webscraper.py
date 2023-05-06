@@ -155,7 +155,7 @@ def getLinksHTML(soup, url):
                     
             if flag:
                 links.append(absolute_link)
-            completed.append(absolute_link)
+        completed.append(absolute_link)
             
     return links
 
