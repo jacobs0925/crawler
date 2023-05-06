@@ -276,8 +276,8 @@ def is_valid(url):
     # If you decide to crawl it, return True; otherwise return False.
     # There are already some conditions that return False.
     
-    #pattern = r'^((.*\.ics\.uci\.edu\/.*)|(.*\.cs\.uci\.edu\/.*)|(.*\.informatics\.uci\.edu\/.*)|(.*\.stat\.uci\.edu\/.*))$'
-    pattern = r'^.*\.ics\.uci\.edu\/.*$'
+    pattern = r'^((.*\.ics\.uci\.edu\/.*)|(.*\.cs\.uci\.edu\/.*)|(.*\.informatics\.uci\.edu\/.*)|(.*\.stat\.uci\.edu\/.*))$'
+    #pattern = r'^.*\.ics\.uci\.edu\/.*$'
     if not re.match(pattern, url.lower()):
         return False
     try:
@@ -321,13 +321,13 @@ if __name__ == '__main__':
         f.write('longest page ' + longestPage[0] + ', ' + str(longestPage[1]) +'\n')
         f.write('most common tokens: \n')
         sorted_freqs = dict(sorted(tokenFrequencies.items(), key=lambda item: item[1], reverse=True))
-        common_50 = sorted_freqs[:50]
+        common_50 = list(sorted_freqs.items())[:50]
         
         for token, freq in common_50:
-            f.write(token + ', ' + str(freq), + '\n')
+            f.write(token + ', ' + str(freq) + '\n')
         
         f.write('subdomains and pages: \n')
-        for subdomain in domains_hashed_pages['ics.uci.edu']:
-            f.write(subdomain + ', ' + str(subdomain_and_count[subdomain]), + '\n')
+        for subdomain in domains_hashed_pages['www.ics.uci.edu']:
+            f.write(subdomain + ', ' + str(subdomain_and_count[subdomain]) + '\n')
         
     print('links',len(completed))
