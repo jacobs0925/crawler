@@ -44,7 +44,7 @@ class Frontier(object):
                 self.to_be_downloaded.append(url)
                 tbd_count += 1
             if not is_valid(url):
-                print('NOT VALID')
+                print('NOT VALID', url)
         self.logger.info(
             f"Found {tbd_count} urls to be downloaded from {total_count} "
             f"total urls discovered.")
