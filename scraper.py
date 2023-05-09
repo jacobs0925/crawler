@@ -129,6 +129,7 @@ def getLinksHTML(soup, url):
     subdomain = getSubDomain(url)
     #stop if this page is too similar
     if computeSimilarity(getDomain(url),subdomain,simhashed,url):
+        print('too similar')
         return []
     
     #increments number of links in subdomain
@@ -148,7 +149,7 @@ def getLinksHTML(soup, url):
             links.append(absolute_link)
             
         completed.append(absolute_link)
-            
+    print('size a tags: ', len(a_tags))  
     return links
 
 def validHTTPStatus(resp):
