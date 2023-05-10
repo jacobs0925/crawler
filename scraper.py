@@ -266,6 +266,9 @@ def is_valid(url):
     '''
     Ensures file extensions are readable and that we are crawling allowed domain
     '''
+    if url == 'https://www.informatics.uci.edu/explore/books-we-have-written/':
+        with open('output.txt', 'a') as f:
+            f.write('FOUND THIS URL')
     # Decide whether to crawl this url or not. 
     # If you decide to crawl it, return True; otherwise return False.
     # There are already some conditions that return False.
