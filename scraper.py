@@ -151,6 +151,7 @@ def getLinksHTML(soup, url):
         #craft absolute link and add to list to return if not visited and valid
         absolute_link = urljoin(url, defrag(a_tag.get('href')))
         links.append(absolute_link)
+        total += 1
             
         completed.append(absolute_link)
     #logger.info('size a tags: '+ str(len(a_tags)))  
