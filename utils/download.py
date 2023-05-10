@@ -12,7 +12,7 @@ def makeRespDict(url, resp, content):
     resp_dict['response'] = content['response']
     print('response:::::')
     print(content.keys())
-    print(str(pickle.loads(content['response'])))
+    print(pickle.loads(content['response'])['content'])
     resp_dict['size'] = resp.headers.get('Content-Length')
     return resp_dict
 
