@@ -123,6 +123,7 @@ def getLinksHTML(soup, url):
     first checks if page has links then if similar page has already been visited
     grabs all a tags and iterates through links if they are valid and not yet visited or repeats
     '''
+    global total
     #stop if no links
     a_tags = soup.find_all('a')
     if len(a_tags) == 0:
