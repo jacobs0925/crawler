@@ -41,6 +41,7 @@ class Frontier(object):
         tbd_count = 0
         for url, completed in self.save.values():
             if not completed and is_valid(url):
+                print('VALID AND NOT COMPLETED',url)
                 self.to_be_downloaded.append(url)
                 tbd_count += 1
             elif not is_valid(url):
