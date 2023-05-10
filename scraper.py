@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 import time
 import hashlib
+from utils import get_logger
 
 #alphanumeric regexes
 ANregex = '^[a-z0-9]*$'
@@ -120,17 +121,18 @@ def getLinksHTML(soup, url):
     first checks if page has links then if similar page has already been visited
     grabs all a tags and iterates through links if they are valid and not yet visited or repeats
     '''
+    logger = get_logger('FRONTIER')
     #stop if no links
     a_tags = soup.find_all('a')
     if len(a_tags) == 0:
-        print('no tags found')
+        logger.info('no tags found')
         return []
     
     simhashed = simhash(soup, url)
     subdomain = getSubDomain(url)
     #stop if this page is too similar
     if computeSimilarity(getDomain(url),subdomain,simhashed,url):
-        print('too similar')
+        logger.info('too similar')
         return []
     
     #increments number of links in subdomain
@@ -150,7 +152,7 @@ def getLinksHTML(soup, url):
             links.append(absolute_link)
             
         completed.append(absolute_link)
-    print('size a tags: ', len(a_tags))  
+    logger.info('size a tags: '+ str(len(a_tags)))  
     return links
 
 def validHTTPStatus(resp):
@@ -243,13 +245,14 @@ def simhash(soup, url):
 
 def extract_next_links(url, resp):
     #stop if page not valid
+    logger = get_logger('FRONTIER')
     if not validHTTPStatus(resp):
-        print('not valid status')
+        logger.info('not valid status')
         return []
     
     #stop if page too long
     if resp.size != None and int(resp.size) > 50000:
-        print('too big or no size')
+        logger.info('too big or no size')
         return []
     
     soup = BeautifulSoup(resp.raw_response, "html.parser")
@@ -257,15 +260,16 @@ def extract_next_links(url, resp):
     #all valid unvisited links in this current page
     links = getLinksHTML(soup, url)
     if len(links) == 0:
-        print('No valid unvisited links discovered')
+        logger.info('No valid unvisited links discovered')
         
-    print('returning links')
+    logger.info('returning links')
     return links
 
 def is_valid(url):
     '''
     Ensures file extensions are readable and that we are crawling allowed domain
     '''
+    logger = get_logger('FRONTIER')
     # Decide whether to crawl this url or not. 
     # If you decide to crawl it, return True; otherwise return False.
     # There are already some conditions that return False.
@@ -273,12 +277,12 @@ def is_valid(url):
     pattern = r'^((.*\.ics\.uci\.edu\/?.*)|(.*\.cs\.uci\.edu\/?.*)|(.*\.informatics\.uci\.edu\/?.*)|(.*\.stat\.uci\.edu\/?.*))$'
     #pattern = r'^.*\.ics\.uci\.edu\/.*$'
     if not re.match(pattern, url.lower()):
-        print('p1 error')
+        logger.info('p1 error')
         return False
     try:
         parsed = urlparse(url)
         if parsed.scheme not in set(["http", "https"]):
-            print('wrong scheme')
+            logger.info('wrong scheme')
             return False
         return not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico|gctx|txt|py|java"
