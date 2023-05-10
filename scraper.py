@@ -36,6 +36,7 @@ def getSubDomain(url):
     '''
     returns subdomain of url
     '''
+    url = url.replace('www.','')
     parsed_url = urlparse(url)
     return parsed_url.hostname.split('.')[0]
     
