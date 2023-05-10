@@ -243,10 +243,12 @@ def simhash(soup, url):
 def extract_next_links(url, resp):
     #stop if page not valid
     if not validHTTPStatus(resp):
+        print('not valid status')
         return []
     
     #stop if page too long
     if resp.size != None and int(resp.size) > 50000:
+        print('too big or no size')
         return []
     
     soup = BeautifulSoup(resp.raw_response, "html.parser")
