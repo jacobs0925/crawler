@@ -22,7 +22,7 @@ def download(url, config, logger=None):
         if resp and resp.content:
             content = cbor.loads(resp.content)
             print('STATUS:',resp.status_code)
-            return makeRespDict(url, resp, content)
+            return Response(makeRespDict(url, resp, content))
     except (EOFError, ValueError) as e:
         pass
     logger.error(f"Spacetime Response error {resp} with url {url}.")
