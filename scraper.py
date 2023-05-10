@@ -253,7 +253,8 @@ def extract_next_links(url, resp):
     
     #all valid unvisited links in this current page
     links = getLinksHTML(soup, url)
-    
+    if len(links) == 0:
+        print('No valid unvisited links discovered')
     return links
 
 def is_valid(url):
