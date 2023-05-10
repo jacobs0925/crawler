@@ -267,10 +267,12 @@ def is_valid(url):
     pattern = r'^((.*\.ics\.uci\.edu\/.*)|(.*\.cs\.uci\.edu\/.*)|(.*\.informatics\.uci\.edu\/.*)|(.*\.stat\.uci\.edu\/.*))$'
     #pattern = r'^.*\.ics\.uci\.edu\/.*$'
     if not re.match(pattern, url.lower()):
+        print('p1 error')
         return False
     try:
         parsed = urlparse(url)
         if parsed.scheme not in set(["http", "https"]):
+            print('wrong scheme')
             return False
         return not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico|gctx|txt|py|java"
