@@ -137,8 +137,7 @@ def getLinksHTML(soup, url):
     if similarity:
         print('too similar', similarity)
         return []
-    else:
-        print('not similar hash:',simhashed)
+    print('current hash:',simhashed)
     
     #increments number of links in subdomain
     if (subdomain in subdomain_and_count):
