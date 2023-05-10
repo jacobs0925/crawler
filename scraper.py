@@ -252,7 +252,10 @@ def extract_next_links(url, resp):
     if resp.size != None and int(resp.size) > 50000:
         return []
     
-    soup = BeautifulSoup(resp.raw_response, "html.parser")
+    if resp.raw_repsonse != None: 
+        soup = BeautifulSoup(resp.raw_response, "html.parser")
+    else:
+        return links
     
     #all valid unvisited links in this current page
     links = getLinksHTML(soup, url)
