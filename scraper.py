@@ -126,7 +126,6 @@ def getLinksHTML(soup, url):
     global total
     #stop if no links
     a_tags = soup.find_all('a')
-    print('LEN ATAGS:',len(a_tags))
     if len(a_tags) == 0:
         return []
     
@@ -135,10 +134,7 @@ def getLinksHTML(soup, url):
     #stop if this page is too similar
     similarity = computeSimilarity(getDomain(url),subdomain,simhashed,url)
     if similarity:
-        print('too similar', similarity)
         return []
-    print('current hash:',simhashed)
-    
     #increments number of links in subdomain
     if (subdomain in subdomain_and_count):
         subdomain_and_count[subdomain] += 1
@@ -156,7 +152,6 @@ def getLinksHTML(soup, url):
         total += 1
             
         completed.append(absolute_link)
-    print('size a tags: '+ str(len(a_tags)))  
     return links
 
 def validHTTPStatus(resp):
@@ -221,7 +216,6 @@ def simhash(soup, url):
     '''
     text = soup.text
     text = text.replace('\n','')
-    print(text)
     frequencies = computeWordFrequencies(text)
     hashed_tokens = {key:hashToken(key) for key in frequencies.keys()}
     
@@ -251,12 +245,10 @@ def simhash(soup, url):
 def extract_next_links(url, resp):
     #stop if page not valid
     if not validHTTPStatus(resp):
-        print('not valid status')
         return []
     
     #stop if page too long
     if resp.size != None and int(resp.size) > 50000:
-        print('too big or no size')
         return []
     
     soup = BeautifulSoup(resp.raw_response, "html.parser")
@@ -264,7 +256,6 @@ def extract_next_links(url, resp):
     #all valid unvisited links in this current page
     links = getLinksHTML(soup, url)
 
-    print('returning links')
     return links
 
 def is_valid(url):
@@ -282,7 +273,6 @@ def is_valid(url):
     try:
         parsed = urlparse(url)
         if parsed.scheme not in set(["http", "https"]):
-            print('wrong scheme')
             return False
         return not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico|gctx|txt|py|java"
