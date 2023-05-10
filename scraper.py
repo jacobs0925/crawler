@@ -123,6 +123,7 @@ def getLinksHTML(soup, url):
     #stop if no links
     a_tags = soup.find_all('a')
     if len(a_tags) == 0:
+        print('no tags found')
         return []
     
     simhashed = simhash(soup, url)
@@ -257,6 +258,8 @@ def extract_next_links(url, resp):
     links = getLinksHTML(soup, url)
     if len(links) == 0:
         print('No valid unvisited links discovered')
+        
+    print('returning links')
     return links
 
 def is_valid(url):
