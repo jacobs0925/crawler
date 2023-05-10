@@ -4,11 +4,11 @@ import time
 
 from utils.response import Response
 
-def makeRespDict(url, resp):
+def makeRespDict(url, resp, content):
     resp_dict = {}
     resp_dict['url'] = url
     resp_dict['status'] = resp.status_code
-    resp_dict['response'] = resp.content
+    resp_dict['response'] = content
     
     resp_dict['size'] = resp.headers.get('Content-Length')
     return resp_dict
@@ -20,7 +20,8 @@ def download(url, config, logger=None):
         params=[("q", f"{url}"), ("u", f"{config.user_agent}")])
     try:
         if resp and resp.content:
-            return Response(makeRespDict(url,resp))
+            content = cbor.loads(resp.content)
+            return makeRespDict(url, resp, content)
     except (EOFError, ValueError) as e:
         pass
     logger.error(f"Spacetime Response error {resp} with url {url}.")
