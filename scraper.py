@@ -259,7 +259,7 @@ def extract_next_links(url, resp):
         print('too big or no size')
         return []
     
-    soup = BeautifulSoup(resp.raw_response, "html.parser",from_encoding="iso-8859-1")
+    soup = BeautifulSoup(resp.raw_response, "html.parser")
     
     #all valid unvisited links in this current page
     links = getLinksHTML(soup, url)
