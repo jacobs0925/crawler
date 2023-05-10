@@ -1,6 +1,7 @@
 import requests
 import cbor
 import time
+import pickle 
 
 from utils.response import Response
 
@@ -9,7 +10,8 @@ def makeRespDict(url, resp, content):
     resp_dict['url'] = url
     resp_dict['status'] = resp.status_code
     resp_dict['response'] = content
-    
+    print('response:::::')
+    print(pickle.loads(resp_dict["response"]))
     resp_dict['size'] = resp.headers.get('Content-Length')
     return resp_dict
 
