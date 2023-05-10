@@ -221,6 +221,7 @@ def simhash(soup, url):
     '''
     text = soup.text
     text = text.replace('\n','')
+    print(text)
     frequencies = computeWordFrequencies(text)
     hashed_tokens = {key:hashToken(key) for key in frequencies.keys()}
     
