@@ -255,7 +255,7 @@ def extract_next_links(url, resp):
     if resp.raw_response != None: 
         soup = BeautifulSoup(resp.raw_response, "html.parser")
     else:
-        return links
+        return []
     
     #all valid unvisited links in this current page
     links = getLinksHTML(soup, url)
