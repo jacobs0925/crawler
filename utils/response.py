@@ -6,6 +6,7 @@ class Response(object):
         self.error = resp_dict["error"] if "error" in resp_dict else None
         self.size = resp_dict['size'] if 'size' in resp_dict else 0
         try:
+            print(pickle.loads(resp_dict["response"]))
             self.raw_response = (
                 pickle.loads(resp_dict["response"])
                 if "response" in resp_dict else
