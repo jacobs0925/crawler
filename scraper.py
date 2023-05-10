@@ -41,7 +41,7 @@ def getSubDomain(url):
     
 def scraper(url, resp):
     links = extract_next_links(url, resp)
-    return links
+    return [link for link in links if is_valid(link)]
 
 def defrag(url):
     '''
@@ -126,8 +126,8 @@ def getLinksHTML(soup, url):
     global total
     #stop if no links
     a_tags = soup.find_all('a')
+    print('LEN ATAGS:',len(a_tags))
     if len(a_tags) == 0:
-        #logger.info('no tags found')
         return []
     
     simhashed = simhash(soup, url)
