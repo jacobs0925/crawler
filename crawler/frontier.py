@@ -47,6 +47,8 @@ class Frontier(object):
                 print('NOT VALID', url)
             if is_valid(url):
                 print('VALID',url)
+            if completed:
+                print('COMPLETED',url)
         self.logger.info(
             f"Found {tbd_count} urls to be downloaded from {total_count} "
             f"total urls discovered.")
