@@ -21,6 +21,7 @@ stopWords = ["a","about","above","after","again","against","all","am","an","and"
 tokenFrequencies = {}
 longestPage = ("",-1)
 subdomain_and_count = {}
+logger = get_logger('CRAWLER')
 
 
 def getDomain(url):
@@ -121,7 +122,6 @@ def getLinksHTML(soup, url):
     first checks if page has links then if similar page has already been visited
     grabs all a tags and iterates through links if they are valid and not yet visited or repeats
     '''
-    logger = get_logger('CRAWLER')
     #stop if no links
     a_tags = soup.find_all('a')
     if len(a_tags) == 0:
@@ -245,7 +245,6 @@ def simhash(soup, url):
 
 def extract_next_links(url, resp):
     #stop if page not valid
-    logger = get_logger('CRAWLER')
     if not validHTTPStatus(resp):
         #logger.info('not valid status')
         return []
@@ -267,7 +266,6 @@ def is_valid(url):
     '''
     Ensures file extensions are readable and that we are crawling allowed domain
     '''
-    logger = get_logger('FRONTIER')
     # Decide whether to crawl this url or not. 
     # If you decide to crawl it, return True; otherwise return False.
     # There are already some conditions that return False.
