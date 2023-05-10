@@ -9,7 +9,7 @@ def makeRespDict(url, resp, content):
     resp_dict = {}
     resp_dict['url'] = url
     resp_dict['status'] = resp.status_code
-    resp_dict['response'] = content
+    resp_dict['response'] = content['response']
     print('response:::::')
     print(content.keys())
     print(pickle.loads(content['response']))
@@ -24,7 +24,7 @@ def download(url, config, logger=None):
     try:
         if resp and resp.content:
             content = cbor.loads(resp.content)
-            return Response(makeRespDict(url, resp, content))
+            return Response(makeRespDict(content['url'], resp, content))
     except (EOFError, ValueError) as e:
         pass
     logger.error(f"Spacetime Response error {resp} with url {url}.")
