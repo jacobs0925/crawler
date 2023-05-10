@@ -275,7 +275,7 @@ def is_valid(url):
     pattern = r'^((.*\.ics\.uci\.edu\/?.*)|(.*\.cs\.uci\.edu\/?.*)|(.*\.informatics\.uci\.edu\/?.*)|(.*\.stat\.uci\.edu\/?.*))$'
     #pattern = r'^.*\.ics\.uci\.edu\/.*$'
     if not re.match(pattern, url.lower()):
-        print('p1 error')
+        print('p1 error', url)
         return False
     try:
         parsed = urlparse(url)
