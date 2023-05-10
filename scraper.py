@@ -121,7 +121,7 @@ def getLinksHTML(soup, url):
     first checks if page has links then if similar page has already been visited
     grabs all a tags and iterates through links if they are valid and not yet visited or repeats
     '''
-    logger = get_logger('FRONTIER')
+    logger = get_logger('CRAWLER')
     #stop if no links
     a_tags = soup.find_all('a')
     if len(a_tags) == 0:
@@ -245,7 +245,7 @@ def simhash(soup, url):
 
 def extract_next_links(url, resp):
     #stop if page not valid
-    logger = get_logger('FRONTIER')
+    logger = get_logger('CRAWLER')
     if not validHTTPStatus(resp):
         logger.info('not valid status')
         return []
