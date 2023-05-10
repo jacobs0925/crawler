@@ -252,7 +252,7 @@ def extract_next_links(url, resp):
     if resp.size != None and int(resp.size) > 50000:
         return []
     
-    if resp.raw_repsonse != None: 
+    if resp.raw_response != None: 
         soup = BeautifulSoup(resp.raw_response, "html.parser")
     else:
         return links
