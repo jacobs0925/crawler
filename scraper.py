@@ -249,7 +249,7 @@ def extract_next_links(url, resp):
         return []
     
     #stop if page too long
-    if resp.size != None and int(resp.size) > 50000:
+    if resp.size != None and int(resp.size) > 1500000:
         return []
     
     if resp.raw_response != None: 
