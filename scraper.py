@@ -125,14 +125,14 @@ def getLinksHTML(soup, url):
     #stop if no links
     a_tags = soup.find_all('a')
     if len(a_tags) == 0:
-        logger.info('no tags found')
+        #logger.info('no tags found')
         return []
     
     simhashed = simhash(soup, url)
     subdomain = getSubDomain(url)
     #stop if this page is too similar
     if computeSimilarity(getDomain(url),subdomain,simhashed,url):
-        logger.info('too similar')
+        #logger.info('too similar')
         return []
     
     #increments number of links in subdomain
@@ -152,7 +152,7 @@ def getLinksHTML(soup, url):
             links.append(absolute_link)
             
         completed.append(absolute_link)
-    logger.info('size a tags: '+ str(len(a_tags)))  
+    #logger.info('size a tags: '+ str(len(a_tags)))  
     return links
 
 def validHTTPStatus(resp):
@@ -247,22 +247,20 @@ def extract_next_links(url, resp):
     #stop if page not valid
     logger = get_logger('CRAWLER')
     if not validHTTPStatus(resp):
-        logger.info('not valid status')
+        #logger.info('not valid status')
         return []
     
     #stop if page too long
     if resp.size != None and int(resp.size) > 50000:
-        logger.info('too big or no size')
+        #logger.info('too big or no size')
         return []
     
     soup = BeautifulSoup(resp.raw_response, "html.parser")
     
     #all valid unvisited links in this current page
     links = getLinksHTML(soup, url)
-    if len(links) == 0:
-        logger.info('No valid unvisited links discovered')
-        
-    logger.info('returning links')
+
+    #logger.info('returning links')
     return links
 
 def is_valid(url):
@@ -277,12 +275,12 @@ def is_valid(url):
     pattern = r'^((.*\.ics\.uci\.edu\/?.*)|(.*\.cs\.uci\.edu\/?.*)|(.*\.informatics\.uci\.edu\/?.*)|(.*\.stat\.uci\.edu\/?.*))$'
     #pattern = r'^.*\.ics\.uci\.edu\/.*$'
     if not re.match(pattern, url.lower()):
-        logger.info('p1 error')
+        #logger.info('p1 error')
         return False
     try:
         parsed = urlparse(url)
         if parsed.scheme not in set(["http", "https"]):
-            logger.info('wrong scheme')
+            #logger.info('wrong scheme')
             return False
         return not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico|gctx|txt|py|java"

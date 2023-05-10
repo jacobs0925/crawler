@@ -31,7 +31,6 @@ class Worker(Thread):
             scraped_urls = scraper.scraper(tbd_url, resp)
             
             for scraped_url in scraped_urls:
-                self.logger.info(f'adding  {scraped_url}  to frontier')
                 self.frontier.add_url(scraped_url)
             self.frontier.mark_url_complete(tbd_url)
             time.sleep(self.config.time_delay)
