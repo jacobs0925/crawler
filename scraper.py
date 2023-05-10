@@ -134,7 +134,7 @@ def getLinksHTML(soup, url):
     subdomain = getSubDomain(url)
     #stop if this page is too similar
     if computeSimilarity(getDomain(url),subdomain,simhashed,url):
-        #logger.info('too similar')
+        print('too similar')
         return []
     
     #increments number of links in subdomain
@@ -154,7 +154,7 @@ def getLinksHTML(soup, url):
         total += 1
             
         completed.append(absolute_link)
-    #logger.info('size a tags: '+ str(len(a_tags)))  
+    print('size a tags: '+ str(len(a_tags)))  
     return links
 
 def validHTTPStatus(resp):
@@ -248,12 +248,12 @@ def simhash(soup, url):
 def extract_next_links(url, resp):
     #stop if page not valid
     if not validHTTPStatus(resp):
-        #logger.info('not valid status')
+        print('not valid status')
         return []
     
     #stop if page too long
     if resp.size != None and int(resp.size) > 50000:
-        #logger.info('too big or no size')
+        print('too big or no size')
         return []
     
     soup = BeautifulSoup(resp.raw_response, "html.parser",from_encoding="iso-8859-1")
@@ -261,7 +261,7 @@ def extract_next_links(url, resp):
     #all valid unvisited links in this current page
     links = getLinksHTML(soup, url)
 
-    #logger.info('returning links')
+    print('returning links')
     return links
 
 def is_valid(url):
@@ -275,12 +275,12 @@ def is_valid(url):
     pattern = r'^((.*\.ics\.uci\.edu\/?.*)|(.*\.cs\.uci\.edu\/?.*)|(.*\.informatics\.uci\.edu\/?.*)|(.*\.stat\.uci\.edu\/?.*))$'
     #pattern = r'^.*\.ics\.uci\.edu\/.*$'
     if not re.match(pattern, url.lower()):
-        #logger.info('p1 error')
+        print('p1 error')
         return False
     try:
         parsed = urlparse(url)
         if parsed.scheme not in set(["http", "https"]):
-            #logger.info('wrong scheme')
+            print('wrong scheme')
             return False
         return not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico|gctx|txt|py|java"
