@@ -152,7 +152,7 @@ def getLinksHTML(soup, url):
         absolute_link = urljoin(url, defrag(a_tag.get('href')))
         if (absolute_link not in links and absolute_link not in completed) and is_valid(absolute_link):
             links.append(absolute_link)
-            total += 1
+        total += 1
             
         completed.append(absolute_link)
     #logger.info('size a tags: '+ str(len(a_tags)))  
