@@ -47,3 +47,4 @@ class Worker(Thread):
             f.write('subdomains and pages: \n')
             for subdomain in scraper.domains_hashed_pages['www.ics.uci.edu']:
                 f.write(subdomain + ', ' + str(scraper.subdomain_and_count[subdomain]) + '\n')
+            f.write('all valid links scraped: ' + str(scraper.total) + '\n')
