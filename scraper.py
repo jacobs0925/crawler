@@ -151,8 +151,8 @@ def getLinksHTML(soup, url):
         absolute_link = urljoin(url, defrag(a_tag.get('href')))
         links.append(absolute_link)
         total += 1
-            
-        completed.append(absolute_link)
+        if is_valid(absolute_link):
+            completed.append(absolute_link)
     return links
 
 def validHTTPStatus(resp):
