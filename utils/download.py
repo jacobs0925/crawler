@@ -9,7 +9,10 @@ def makeRespDict(url, resp, content):
     resp_dict = {}
     resp_dict['url'] = url
     resp_dict['status'] = resp.status_code
-    resp_dict['response'] = pickle.loads(content['response']).content
+    
+    if 'response' in content:
+        depickled_repsonse = pickle.loads(content['response'])
+        resp_dict['response'] = depickled_repsonse.content
 
     resp_dict['size'] = resp.headers.get('Content-Length')
     return resp_dict
