@@ -84,7 +84,7 @@ def compareHashes(hashedURLs, simhashed):
         similarity = common / len(simhashed)
 
         if similarity > .7:
-            return True
+            return hashed_url
     return False
 
 def computeSimilarity(domain, subdomain, simhashed, url):
@@ -133,8 +133,9 @@ def getLinksHTML(soup, url):
     simhashed = simhash(soup, url)
     subdomain = getSubDomain(url)
     #stop if this page is too similar
-    if computeSimilarity(getDomain(url),subdomain,simhashed,url):
-        print('too similar', url)
+    similarity = computeSimilarity(getDomain(url),subdomain,simhashed,url)
+    if similarity:
+        print('too similar', similarity)
         return []
     
     #increments number of links in subdomain
