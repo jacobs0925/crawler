@@ -253,7 +253,7 @@ def extract_next_links(url, resp):
         return []
     
     if resp.raw_response != None: 
-        soup = BeautifulSoup(resp.raw_response, "html.parser")
+        soup = BeautifulSoup(resp.raw_response, "html.parser",from_encoding="iso-8859-1")
     else:
         return []
     
