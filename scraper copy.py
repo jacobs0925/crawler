@@ -1,4 +1,5 @@
 import re
+from download import download
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
@@ -10,7 +11,7 @@ ANregex = '^[a-z0-9]*$'
 Splitregex = "[^0-9a-zA-Z]+"
 
 #url processing
-completed = ['https://www.ics.uci.edu','https://www.stat.uci.edu','https://www.informatics.uci.edu','https://www.cs.uci.edu']
+completed = []
 hashedURLs = []
 domains_hashed_pages = {}
 
@@ -20,32 +21,21 @@ stopWords = ["a","about","above","after","again","against","all","am","an","and"
 tokenFrequencies = {}
 longestPage = ("",-1)
 subdomain_and_count = {}
-total = 0
 
 
 def getDomain(url):
     '''
     returns domain of url
     '''
-    pattern = r'^(www\.)?((.*\.)((.*ics\.uci\.edu)|(.*cs\.uci\.edu)|(.*informatics\.uci\.edu)|(.*stat\.uci\.edu)))\/?.*$'
-    
-    match = re.search(pattern, url.lower())
-    subdomain = match.group(2).split('//')[1]
-    domain = match.group(4)
-    
-    return domain
+    parsed_url = urlparse(url)
+    return parsed_url.netloc
 
 def getSubDomain(url):
     '''
     returns subdomain of url
     '''
-    pattern = r'^(www\.)?((.*\.)((.*ics\.uci\.edu)|(.*cs\.uci\.edu)|(.*informatics\.uci\.edu)|(.*stat\.uci\.edu)))\/?.*$'
-    
-    match = re.search(pattern, url.lower())
-    subdomain = match.group(2).split('//')[1]
-    domain = match.group(4)
-    
-    return subdomain
+    parsed_url = urlparse(url)
+    return parsed_url.hostname.split('.')[0]
     
 def scraper(url, resp):
     links = extract_next_links(url, resp)
@@ -92,7 +82,7 @@ def compareHashes(hashedURLs, simhashed):
         similarity = common / len(simhashed)
 
         if similarity > .7:
-            return hashed_url
+            return True
     return False
 
 def computeSimilarity(domain, subdomain, simhashed, url):
@@ -131,8 +121,6 @@ def getLinksHTML(soup, url):
     first checks if page has links then if similar page has already been visited
     grabs all a tags and iterates through links if they are valid and not yet visited or repeats
     '''
-    if len(url) > 1 and url[-1] == '/':
-        url = url[:-1]
     #stop if no links
     a_tags = soup.find_all('a')
     if len(a_tags) == 0:
@@ -141,9 +129,9 @@ def getLinksHTML(soup, url):
     simhashed = simhash(soup, url)
     subdomain = getSubDomain(url)
     #stop if this page is too similar
-    similarity = computeSimilarity(getDomain(url),subdomain,simhashed,url)
-    if similarity:
+    if computeSimilarity(getDomain(url),subdomain,simhashed,url):
         return []
+    
     #increments number of links in subdomain
     if (subdomain in subdomain_and_count):
         subdomain_and_count[subdomain] += 1
@@ -157,11 +145,18 @@ def getLinksHTML(soup, url):
         
         #craft absolute link and add to list to return if not visited and valid
         absolute_link = urljoin(url, defrag(a_tag.get('href')))
-        if len(absolute_link) > 1 and absolute_link[-1] == '/':
-            absolute_link = absolute_link[:-1]
-        if is_valid(absolute_link) and absolute_link not in completed:
-            links.append(absolute_link)
-            completed.append(absolute_link)
+        if (absolute_link not in links and absolute_link not in completed) and is_valid(absolute_link):
+            
+            flag = True
+            filters = ['?','.gctx','.txt','.py','.java','.class','.pdf','.npy','.sql','.war','.seq','.bed','.bam','.bigwig','.bw']
+            for f in filters:
+                if f in absolute_link:
+                    flag = False
+                    
+            if flag:
+                links.append(absolute_link)
+        completed.append(absolute_link)
+            
     return links
 
 def validHTTPStatus(resp):
@@ -258,53 +253,64 @@ def extract_next_links(url, resp):
         return []
     
     #stop if page too long
-    if resp.size != None and int(resp.size) > 1500000:
+    if resp.size != None and int(resp.size) > 50000:
         return []
     
-    if resp.raw_response != None: 
-        soup = BeautifulSoup(resp.raw_response, "html.parser",from_encoding="iso-8859-1")
-    else:
-        return []
+    soup = BeautifulSoup(resp.raw_response, "html.parser")
     
     #all valid unvisited links in this current page
     links = getLinksHTML(soup, url)
-
+    
     return links
 
 def is_valid(url):
     '''
     Ensures file extensions are readable and that we are crawling allowed domain
     '''
-    if 'https://www.informatics.uci.edu/explore' in url:
-        with open('output.txt', 'a') as f:
-            f.write('FOUND THIS URL ' + str(url))
     # Decide whether to crawl this url or not. 
     # If you decide to crawl it, return True; otherwise return False.
     # There are already some conditions that return False.
-     
-    pattern = r'^(www\.)?((.*\.)((.*ics\.uci\.edu)|(.*cs\.uci\.edu)|(.*informatics\.uci\.edu)|(.*stat\.uci\.edu)))\/?.*$'
-    #pattern = r'^.*\.ics\.uci\.edu\/.*$'
     
-    if '?' in url:
+    pattern = r'^((.*\.ics\.uci\.edu\/.*)|(.*\.cs\.uci\.edu\/.*)|(.*\.informatics\.uci\.edu\/.*)|(.*\.stat\.uci\.edu\/.*))$'
+    #pattern = r'^.*\.ics\.uci\.edu\/.*$'
+    if not re.match(pattern, url.lower()):
         return False
-    match = re.search(pattern, url.lower())
-    if not match:
-        return False
-
     try:
         parsed = urlparse(url)
         if parsed.scheme not in set(["http", "https"]):
             return False
         return not re.match(
-            r".*\.(css|js|bmp|gif|jpe?g|ico|gctx|txt|py|java"
-            + r"|png|tiff?|mid|mp2|mp3|mp4|bib|mpg|img|class"
-            + r"|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf|npy|sql|war|seq"
-            + r"|ps|eps|tex|ppt|pptx|doc|docx|xls|xlsx|names|bam"
+            r".*\.(css|js|bmp|gif|jpe?g|ico"
+            + r"|png|tiff?|mid|mp2|mp3|mp4|bib|mpg|img"
+            + r"|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf"
+            + r"|ps|eps|tex|ppt|pptx|doc|docx|xls|xlsx|names"
             + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso"
-            + r"|epub|dll|cnf|tgz|sha1|bigwig"
-            + r"|thmx|mso|arff|rtf|jar|csv|bw"
+            + r"|epub|dll|cnf|tgz|sha1"
+            + r"|thmx|mso|arff|rtf|jar|csv"
             + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower())
 
     except TypeError:
         print ("TypeError for ", parsed)
         raise
+
+if __name__ == '__main__':
+    j = 1
+    
+    
+    seeds = ['https://www.ics.uci.edu/','https://www.stat.uci.edu/','https://www.informatics.uci.edu/','https://www.cs.uci.edu/']
+    #seeds = ['https://www.ics.uci.edu/','https://www.stat.uci.edu/','https://www.informatics.uci.edu/','https://www.cs.uci.edu/','https://grape.ics.uci.edu/wiki/public/zip-attachment/wiki/cs122b-2018-winter-project1-eclipse-project/']
+    completed.extend(seeds)
+    while (len(seeds) > 0):
+        top = seeds.pop(0)
+        print(j, 'current link',top)
+        with open('output.txt', 'a') as f:
+            f.write(str(j) +  ' ' + top + '\n')
+        resp = download(top)
+        if resp:
+            seeds.extend(extract_next_links(top, resp))
+            time.sleep(.5)
+            j += 1
+            
+    
+        
+    print('links',len(completed))
