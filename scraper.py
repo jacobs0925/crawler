@@ -20,7 +20,6 @@ stopWords = ["a","about","above","after","again","against","all","am","an","and"
 tokenFrequencies = {}
 longestPage = ("",-1)
 subdomain_and_count = {}
-total = 0
 
 
 def getDomain(url):
@@ -118,6 +117,7 @@ def computeSimilarity(domain, subdomain, simhashed, url):
                     return similar
     
     #domain or subdomain not found: add
+    #print('domain: ' + domain + ' subdomain: ' + subdomain)
     if domain in domains_hashed_pages:
         domains_hashed_pages[domain][subdomain] = [simhashed]
     else:
@@ -131,8 +131,6 @@ def getLinksHTML(soup, url):
     first checks if page has links then if similar page has already been visited
     grabs all a tags and iterates through links if they are valid and not yet visited or repeats
     '''
-    if len(url) > 1 and url[-1] == '/':
-        url = url[:-1]
     #stop if no links
     a_tags = soup.find_all('a')
     if len(a_tags) == 0:
@@ -157,8 +155,9 @@ def getLinksHTML(soup, url):
         
         #craft absolute link and add to list to return if not visited and valid
         absolute_link = urljoin(url, defrag(a_tag.get('href')))
-        if len(absolute_link) > 1 and absolute_link[-1] == '/':
-            absolute_link = absolute_link[:-1]
+        if len(url) > 1 and url[-1] == '/':
+            url = url[:-1]
+        
         if is_valid(absolute_link) and absolute_link not in completed:
             links.append(absolute_link)
             completed.append(absolute_link)
