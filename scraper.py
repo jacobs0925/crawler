@@ -161,7 +161,7 @@ def getLinksHTML(soup, url):
         if is_valid(absolute_link) and absolute_link not in completed:
             links.append(absolute_link)
         
-        if is_valid(absolute_link):    
+        if absolute_link not in completed:    
             completed.append(absolute_link)
     return links
 
