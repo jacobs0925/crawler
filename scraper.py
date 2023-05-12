@@ -279,7 +279,7 @@ def is_valid(url):
 
     if 'https://sli.ics.uci.edu/AIStats/Postings' in url:
         with open('output.txt', 'a',encoding="utf-8") as f:
-            f.write('FOUND THIS URL ' + str(url))
+            f.write('FOUND THIS URL ' + str(url) + '\n')
     # Decide whether to crawl this url or not. 
     # If you decide to crawl it, return True; otherwise return False.
     # There are already some conditions that return False.
