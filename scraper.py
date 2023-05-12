@@ -26,7 +26,7 @@ def getDomain(url):
     '''
     returns domain of url
     '''
-    pattern = r'^(www\.)?((.*\.)((.*ics\.uci\.edu)|(.*cs\.uci\.edu)|(.*informatics\.uci\.edu)|(.*stat\.uci\.edu)))\/?.*$'
+    pattern = r'^(www\.)?((.*\.)((ics\.uci\.edu)|(cs\.uci\.edu)|(informatics\.uci\.edu)|(stat\.uci\.edu)))\/?.*$'
     
     match = re.search(pattern, url.lower())
     subdomain = match.group(2).split('//')[1]
@@ -38,7 +38,7 @@ def getSubDomain(url):
     '''
     returns subdomain of url
     '''
-    pattern = r'^(www\.)?((.*\.)((.*ics\.uci\.edu)|(.*cs\.uci\.edu)|(.*informatics\.uci\.edu)|(.*stat\.uci\.edu)))\/?.*$'
+    pattern = r'^(www\.)?((.*\.)((ics\.uci\.edu)|(cs\.uci\.edu)|(informatics\.uci\.edu)|(stat\.uci\.edu)))\/?.*$'
     
     match = re.search(pattern, url.lower())
     subdomain = match.group(2).split('//')[1]
@@ -90,7 +90,7 @@ def compareHashes(hashedURLs, simhashed):
                 common += 1
         similarity = common / len(simhashed)
 
-        if similarity > .7:
+        if similarity > .8:
             return hashed_url
     return False
 
@@ -155,8 +155,8 @@ def getLinksHTML(soup, url):
         
         #craft absolute link and add to list to return if not visited and valid
         absolute_link = urljoin(url, defrag(a_tag.get('href')))
-        if len(url) > 1 and url[-1] == '/':
-            url = url[:-1]
+        if len(absolute_link) > 1 and absolute_link[-1] == '/':
+            absolute_link = absolute_link[:-1]
         
         if is_valid(absolute_link) and absolute_link not in completed:
             links.append(absolute_link)
@@ -274,14 +274,15 @@ def is_valid(url):
     '''
     Ensures file extensions are readable and that we are crawling allowed domain
     '''
-    if 'https://www.informatics.uci.edu/explore' in url:
-        with open('output.txt', 'a') as f:
+
+    if 'https://sli.ics.uci.edu/AIStats/Postings' in url:
+        with open('output.txt', 'a',encoding="utf-8") as f:
             f.write('FOUND THIS URL ' + str(url))
     # Decide whether to crawl this url or not. 
     # If you decide to crawl it, return True; otherwise return False.
     # There are already some conditions that return False.
      
-    pattern = r'^(www\.)?((.*\.)((.*ics\.uci\.edu)|(.*cs\.uci\.edu)|(.*informatics\.uci\.edu)|(.*stat\.uci\.edu)))\/?.*$'
+    pattern = r'^(www\.)?((.*\.)((ics\.uci\.edu)|(cs\.uci\.edu)|(informatics\.uci\.edu)|(stat\.uci\.edu)))\/?.*$'
     #pattern = r'^.*\.ics\.uci\.edu\/.*$'
     
     if '?' in url:
